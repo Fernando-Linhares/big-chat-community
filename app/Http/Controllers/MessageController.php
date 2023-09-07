@@ -31,7 +31,7 @@ class MessageController extends Controller
 
         if($message = $this->message->create($inputs)){
 
-            MessageJob::dispatch($message);
+            MessageJob::dispatch(message: $message);
 
             return $message;
         }

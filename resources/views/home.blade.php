@@ -22,6 +22,8 @@
     </div>
 </div>
 
+<input type="hidden" name="user_id" value="{{ request()->user()->id }}">
+
 <script type="module">
 
     async function config() {
@@ -37,10 +39,12 @@
         return headers;
     }
 
+    const containerMessage = document.querySelector('#container-message');
+
     async function init(){
 
-        const containerMessage = document.querySelector('#container-message');
         const txtMessage = document.querySelector('#text-message')
+
         let setup = await config();
 
         let res = await axios.get(window.location.origin + '/api/message', setup);
@@ -58,17 +62,21 @@
 
         Echo.channel('message')
         .listen('MessageEvent', event => {
-            let div = document.createElement('div');
 
-                div.innerHTML = '<div class="alert alert-info">' + event.message.content + '</div>';
+            const user_id = document.querySelector('[name=user_id]').value;
+            console.log(event.message.user_id != Number(user_id));
+            if(event.message.user_id != Number(user_id)) {
+
+                let div = document.createElement('div');
+
+                div.innerHTML = '<div class="alert alert-success">' + event.message.content + '</div>';
 
                 containerMessage.appendChild(div);
+            }
         });
-
     }
 
     init();
-
 
     async function send_message(event) {
 
@@ -80,11 +88,17 @@
                 content: event.target.value
             };
 
-            await axios.post(window.location.origin + '/api/message', form, config);
+            const { data } = await axios.post(window.location.origin + '/api/message', form, config);
+
+            event.target.value = '';
+
+            let div = document.createElement('div');
+
+            div.innerHTML = '<div class="alert alert-info">' + data.content + '</div>';
+
+            containerMessage.appendChild(div);
         }
     }
-
-
 
 </script>
 @endsection

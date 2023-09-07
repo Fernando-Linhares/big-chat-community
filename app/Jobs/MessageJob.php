@@ -18,8 +18,9 @@ class MessageJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private Message $message)
-    {}
+    public function __construct(
+        private Message $message
+    ){}
 
     /**
      * Execute the job.
